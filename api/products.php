@@ -1,63 +1,174 @@
 <?php
-// api/products.php
-// Handles CRUD for products
+$host = "localhost";
+$user = "root";
+$password = "";
+$database = "core_inventory";
 
-require_once 'db.php';
+$conn = mysqli_connect($host,$user,$password,$database);
 
-header('Content-Type: application/json');
-$method = $_SERVER['REQUEST_METHOD'];
+if(!$conn){
+    die("Database Connection Failed");
+}
 
-try {
-    if ($method === 'GET') {
-        // Fetch products
-        $stmt = $pdo->query("SELECT id, name, sku, category, uom, stock, price, min_stock FROM products ORDER BY name ASC");
-        $products = $stmt->fetchAll();
-        
-        // Format for frontend
-        $formatted = array_map(function($p) {
-            return [
-                'id' => $p['id'],
-                'name' => $p['name'],
-                'sku' => $p['sku'],
-                'cat' => $p['category'],
-                'uom' => $p['uom'],
-                'stock' => (int)$p['stock'],
-                'price' => '$' . number_format($p['price'], 2)
-            ];
-        }, $products);
-        
-        echo json_encode($formatted);
+$query = "SELECT id,name,sku,category,uom,price,min_stock,created_at FROM products";
+$result = mysqli_query($conn,$query);
+?>
 
-    } elseif ($method === 'POST') {
-        // Create new product
-        $data = json_decode(file_get_contents('php://input'), true);
-        
-        if (!isset($data['name']) || !isset($data['sku'])) {
-            http_response_code(400);
-            echo json_encode(["status" => "error", "message" => "Name and SKU are required"]);
-            exit;
-        }
+<!DOCTYPE html>
+<html lang="en">
+<head>
 
-        $stmt = $pdo->prepare("INSERT INTO products (name, sku, category, uom, stock, price, min_stock) VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([
-            $data['name'],
-            $data['sku'],
-            $data['category'] ?? 'General',
-            $data['uom'] ?? 'Units',
-            $data['stock'] ?? 0,
-            $data['price'] ?? 0.00,
-            $data['min_stock'] ?? 10
-        ]);
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        echo json_encode(["status" => "success", "message" => "Product created successfully", "id" => $pdo->lastInsertId()]);
-    }
-} catch (\PDOException $e) {
-    http_response_code(500);
-    // Handle duplicate SKU error (1062) uniquely
-    if ($e->errorInfo[1] == 1062) {
-        echo json_encode(["status" => "error", "message" => "A product with this SKU already exists."]);
-    } else {
-        echo json_encode(["status" => "error", "message" => "Database error: " . $e->getMessage()]);
-    }
+<title>Products | CoreInventory</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+</head>
+
+<body class="bg-gray-50 font-sans">
+
+<div class="p-8">
+
+<div class="flex justify-between items-center mb-6">
+
+<h1 class="text-2xl font-bold text-gray-800">
+Products
+</h1>
+
+<button class="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+<i class="ph ph-plus mr-2"></i>
+Add Product
+</button>
+
+</div>
+
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+
+<div class="overflow-x-auto">
+
+<table class="w-full text-left">
+
+<thead>
+
+<tr class="border-b text-gray-500 text-sm">
+
+<th class="py-3 px-4">ID</th>
+<th class="py-3 px-4">Name</th>
+<th class="py-3 px-4">SKU</th>
+<th class="py-3 px-4">Category</th>
+<th class="py-3 px-4">UOM</th>
+<th class="py-3 px-4">Price</th>
+<th class="py-3 px-4">Min Stock</th>
+<th class="py-3 px-4">Created At</th>
+<th class="py-3 px-4">Status</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<?php
+
+if(mysqli_num_rows($result) > 0){
+
+while($row = mysqli_fetch_assoc($result)){
+
+$status = "In Stock";
+$statusColor = "green";
+
+if($row['min_stock'] <= 10){
+$status = "Low Stock";
+$statusColor = "red";
+}
+
+?>
+
+<tr class="border-b hover:bg-gray-50">
+
+<td class="py-3 px-4">
+<?php echo $row['id']; ?>
+</td>
+
+<td class="py-3 px-4 font-medium">
+<?php echo $row['name']; ?>
+</td>
+
+<td class="py-3 px-4">
+<?php echo $row['sku']; ?>
+</td>
+
+<td class="py-3 px-4">
+<?php echo $row['category']; ?>
+</td>
+
+<td class="py-3 px-4">
+<?php echo $row['uom']; ?>
+</td>
+
+<td class="py-3 px-4">
+₹<?php echo $row['price']; ?>
+</td>
+
+<td class="py-3 px-4">
+<?php echo $row['min_stock']; ?>
+</td>
+
+<td class="py-3 px-4">
+<?php echo $row['created_at']; ?>
+</td>
+
+<td class="py-3 px-4">
+
+<?php if($status == "Low Stock"){ ?>
+
+<span class="bg-red-100 text-red-600 text-xs px-2 py-1 rounded-full">
+Low Stock
+</span>
+
+<?php } else { ?>
+
+<span class="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
+In Stock
+</span>
+
+<?php } ?>
+
+</td>
+
+</tr>
+
+<?php
+}
+}
+else{
+
+echo "<tr>
+<td colspan='9' class='text-center py-5 text-gray-500'>
+No Products Found
+</td>
+</tr>";
+
 }
 ?>
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>
+

@@ -2,7 +2,7 @@
 // Handing UI Interactions, Views, and simple dummy data for Hackathon Demo
 
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     // --- State ---
     const state = {
         currentView: 'dashboard'
@@ -11,13 +11,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- DOM Elements ---
     const sidebar = document.getElementById('sidebar');
     const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
-    if(!toggleSidebarBtn) {
+    if (!toggleSidebarBtn) {
         document.getElementById('toggle-sidebar').addEventListener('click', toggleSidebar);
     }
     const navButtons = document.querySelectorAll('.nav-btn');
     const viewSections = document.querySelectorAll('.view-section');
     const currentTimeEl = document.getElementById('current-time');
-    
+
     // --- Initialization ---
     initApp();
 
@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update Time
         setInterval(() => {
             const now = new Date();
-            currentTimeEl.textContent = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            currentTimeEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }, 1000);
 
         // Sidebar interactions
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
                 const view = btn.getAttribute('data-view');
-                if(view) switchView(view);
+                if (view) switchView(view);
             });
         });
 
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function switchView(viewName) {
         // Update Active Nav Button
         navButtons.forEach(btn => {
-            if(btn.getAttribute('data-view') === viewName) {
+            if (btn.getAttribute('data-view') === viewName) {
                 btn.classList.add('active', 'bg-erp-sidebarhover', 'text-white');
                 btn.classList.remove('text-gray-300');
             } else {
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Hide all views, show selected
         viewSections.forEach(section => {
-            if(section.id === `view-${viewName}`) {
+            if (section.id === `view-${viewName}`) {
                 section.classList.add('active');
                 section.classList.remove('hidden');
             } else {
@@ -70,18 +70,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 section.classList.add('hidden');
             }
         });
-        
+
         state.currentView = viewName;
 
         // Optionally, load data when switching views
-        if(viewName === 'dashboard') populateDashboard();
-        else if(viewName === 'products') renderProductsPage();
-        else if(viewName === 'receipts') renderReceiptsPage();
-        else if(viewName === 'deliveries') renderDeliveriesPage();
-        else if(viewName === 'transfers') renderTransfersPage();
-        else if(viewName === 'adjustments') renderAdjustmentsPage();
-        else if(viewName === 'history') renderHistoryPage();
-        else if(viewName === 'warehouses') renderWarehousesPage();
+        if (viewName === 'dashboard') populateDashboard();
+        else if (viewName === 'products') renderProductsPage();
+        else if (viewName === 'receipts') renderReceiptsPage();
+        else if (viewName === 'deliveries') renderDeliveriesPage();
+        else if (viewName === 'transfers') renderTransfersPage();
+        else if (viewName === 'adjustments') renderAdjustmentsPage();
+        else if (viewName === 'history') renderHistoryPage();
+        else if (viewName === 'warehouses') renderWarehousesPage();
     }
 
     // --- Dashboard Functions ---
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('api/dashboard.php');
             const data = await response.json();
-            
+
             // KPIs
             document.getElementById('kpi-products').textContent = data.kpis.products.toLocaleString();
             document.getElementById('kpi-low-stock').textContent = data.kpis.lowStock;
@@ -146,8 +146,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initChart() {
         const ctx = document.getElementById('inventoryChart');
-        if(!ctx) return;
-        
+        if (!ctx) return;
+
         new Chart(ctx, {
             type: 'line',
             data: {
@@ -201,8 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // (Will be implemented in next tasks to keep file modular)
     function renderProductsPage() {
         const container = document.getElementById('view-products');
-        if(container.innerHTML.trim() !== '') return; // Already rendered
-        
+        if (container.innerHTML.trim() !== '') return; // Already rendered
+
         container.innerHTML = `
             <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h1 class="text-2xl font-bold text-gray-800">Products</h1>
@@ -252,15 +252,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             </div>
         `;
-        
+
         // Fetch products from API
         const productsTbody = document.getElementById('products-tbody');
-        
+
         async function fetchProducts() {
             try {
                 const response = await fetch('api/products.php');
                 const products = await response.json();
-                
+
                 productsTbody.innerHTML = '';
                 products.forEach(p => {
                     const row = document.createElement('tr');
@@ -290,12 +290,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error fetching products:', error);
             }
         }
-        
+
         fetchProducts();
 
         // Add Product Event Listener
         const addBtn = container.querySelector('button.bg-primary-600');
-        if(addBtn) {
+        if (addBtn) {
             addBtn.addEventListener('click', () => {
                 openModal(`
                     <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden">
@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Handle Form submission
                 document.getElementById('add-product-form').addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    
+
                     const payload = {
                         name: document.getElementById('p-name').value,
                         sku: document.getElementById('p-sku').value,
@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             body: JSON.stringify(payload)
                         });
                         const data = await res.json();
-                        
+
                         if (data.status === 'success') {
                             closeModal();
                             fetchProducts(); // Refresh table
@@ -391,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Modal logic
-    window.openModal = function(htmlContent) {
+    window.openModal = function (htmlContent) {
         const modal = document.getElementById('modal-container');
         modal.innerHTML = htmlContent;
         modal.classList.remove('hidden');
@@ -399,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => modal.classList.remove('opacity-0'), 10);
     };
 
-    window.closeModal = function() {
+    window.closeModal = function () {
         const modal = document.getElementById('modal-container');
         modal.classList.add('opacity-0');
         setTimeout(() => {
@@ -410,8 +410,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderReceiptsPage() {
         const container = document.getElementById('view-receipts');
-        if(container.innerHTML.trim() !== '') return;
-        
+        if (container.innerHTML.trim() !== '') return;
+
         container.innerHTML = `
             <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h1 class="text-2xl font-bold text-gray-800">Incoming Receipts</h1>
@@ -463,8 +463,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderDeliveriesPage() {
         const container = document.getElementById('view-deliveries');
-        if(container.innerHTML.trim() !== '') return;
-        
+        if (container.innerHTML.trim() !== '') return;
+
         container.innerHTML = `
             <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h1 class="text-2xl font-bold text-gray-800">Delivery Orders</h1>
@@ -516,8 +516,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderTransfersPage() {
         const container = document.getElementById('view-transfers');
-        if(container.innerHTML.trim() !== '') return;
-        
+        if (container.innerHTML.trim() !== '') return;
+
         container.innerHTML = `
             <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h1 class="text-2xl font-bold text-gray-800">Internal Transfers</h1>
@@ -537,8 +537,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderAdjustmentsPage() {
         const container = document.getElementById('view-adjustments');
-        if(container.innerHTML.trim() !== '') return;
-        
+        if (container.innerHTML.trim() !== '') return;
+
         container.innerHTML = `
             <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h1 class="text-2xl font-bold text-gray-800">Inventory Adjustments</h1>
@@ -574,8 +574,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderHistoryPage() {
         const container = document.getElementById('view-history');
-        if(container.innerHTML.trim() !== '') return;
-        
+        if (container.innerHTML.trim() !== '') return;
+
         container.innerHTML = `
             <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h1 class="text-2xl font-bold text-gray-800">Move History</h1>
@@ -632,8 +632,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderWarehousesPage() {
         const container = document.getElementById('view-warehouses');
-        if(container.innerHTML.trim() !== '') return;
-        
+        if (container.innerHTML.trim() !== '') return;
+
         container.innerHTML = `
             <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
                 <h1 class="text-2xl font-bold text-gray-800">Warehouses & Locations</h1>
@@ -677,5 +677,19 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
     }
+
+});
+document.querySelector('[data-view="products"]').addEventListener("click", function () {
+
+    fetch("api/products.php")
+        .then(response => response.text())
+        .then(data => {
+
+            document.getElementById("view-products").innerHTML = data;
+
+            document.querySelectorAll(".view-section").forEach(v => v.classList.add("hidden"));
+            document.getElementById("view-products").classList.remove("hidden");
+
+        });
 
 });

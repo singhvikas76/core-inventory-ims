@@ -1,0 +1,95 @@
+/* Custom scrollbar for webkit */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+ 
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1; 
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8; 
+}
+
+/* Sidebar closed state */
+.sidebar-closed {
+    width: 5rem !important; /* 80px */
+}
+
+.sidebar-closed .sidebar-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    display: none;
+}
+
+.sidebar-closed .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    justify-content: center;
+}
+
+.sidebar-closed .nav-btn {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.sidebar-closed .nav-btn i {
+    margin-right: 0;
+}
+
+/* Nav Link active state */
+.nav-btn.active {
+    background-color: #0ea5e9;
+    color: white;
+}
+.nav-btn.active i {
+    color: white;
+}
+
+/* Smooth view transitions */
+.view-section {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.view-section.active {
+    display: block;
+}
+
+/* Dropdown Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Table hover row */
+tbody tr {
+    transition: background-color 0.2s ease;
+}
+tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Status Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.badge-draft { background-color: #f1f5f9; color: #475569; }
+.badge-waiting { background-color: #fef08a; color: #854d0e; }
+.badge-ready { background-color: #e0f2fe; color: #0369a1; }
+.badge-done { background-color: #dcfce3; color: #166534; }

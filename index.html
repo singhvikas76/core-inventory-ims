@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" class="antialiased font-sans bg-gray-50 text-slate-800 h-full w-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoreInventory | ERP System</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Phosphor Icons for modern, clean look -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        },
+                        erp: {
+                            sidebar: '#1e293b',
+                            sidebartxt: '#cbd5e1',
+                            sidebarhover: '#334155'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="flex h-screen overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-erp-sidebar text-erp-sidebartxt w-64 flex-shrink-0 flex flex-col transition-all duration-300 z-20 shadow-xl overflow-y-auto">
+        <div class="h-16 flex items-center px-6 border-b border-gray-700">
+            <i class="ph ph-package text-2xl text-primary-500 mr-3"></i>
+            <span class="text-xl font-bold text-white tracking-wide sidebar-text">CoreInventory</span>
+        </div>
+        
+        <nav class="flex-1 px-4 py-6 space-y-1">
+            <p class="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 sidebar-text">Main Menu</p>
+            <a href="#" data-view="dashboard" class="nav-btn active flex items-center px-3 py-2.5 rounded-lg hover:bg-erp-sidebarhover text-white transition-colors">
+                <i class="ph ph-squares-four text-xl mr-3"></i>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+            <a href="#" data-view="products" class="nav-btn flex items-center px-3 py-2.5 rounded-lg hover:bg-erp-sidebarhover text-gray-300 hover:text-white transition-colors">
+                <i class="ph ph-box-box text-xl mr-3"></i>
+                <span class="sidebar-text">Products</span>
+            </a>
+            
+            <p class="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6 mb-2 sidebar-text">Operations</p>
+            <a href="#" data-view="receipts" class="nav-btn flex items-center px-3 py-2.5 rounded-lg hover:bg-erp-sidebarhover text-gray-300 hover:text-white transition-colors">
+                <i class="ph ph-arrow-down-left text-xl mr-3"></i>
+                <span class="sidebar-text">Receipts</span>
+            </a>
+            <a href="#" data-view="deliveries" class="nav-btn flex items-center px-3 py-2.5 rounded-lg hover:bg-erp-sidebarhover text-gray-300 hover:text-white transition-colors">
+                <i class="ph ph-arrow-up-right text-xl mr-3"></i>
+                <span class="sidebar-text">Delivery Orders</span>
+            </a>
+            <a href="#" data-view="transfers" class="nav-btn flex items-center px-3 py-2.5 rounded-lg hover:bg-erp-sidebarhover text-gray-300 hover:text-white transition-colors">
+                <i class="ph ph-arrows-left-right text-xl mr-3"></i>
+                <span class="sidebar-text">Internal Transfers</span>
+            </a>
+            <a href="#" data-view="adjustments" class="nav-btn flex items-center px-3 py-2.5 rounded-lg hover:bg-erp-sidebarhover text-gray-300 hover:text-white transition-colors">
+                <i class="ph ph-sliders-horizontal text-xl mr-3"></i>
+                <span class="sidebar-text">Inventory Adjustments</span>
+            </a>
+            
+            <p class="px-2 text-xs font-semibold text-gray-400 uppercase tracking-wider mt-6 mb-2 sidebar-text">Analytics & Settings</p>
+            <a href="#" data-view="history" class="nav-btn flex items-center px-3 py-2.5 rounded-lg hover:bg-erp-sidebarhover text-gray-300 hover:text-white transition-colors">
+                <i class="ph ph-clock-counter-clockwise text-xl mr-3"></i>
+                <span class="sidebar-text">Move History</span>
+            </a>
+            <a href="#" data-view="warehouses" class="nav-btn flex items-center px-3 py-2.5 rounded-lg hover:bg-erp-sidebarhover text-gray-300 hover:text-white transition-colors">
+                <i class="ph ph-warehouse text-xl mr-3"></i>
+                <span class="sidebar-text">Warehouses</span>
+            </a>
+            <a href="#" data-view="settings" class="nav-btn flex items-center px-3 py-2.5 rounded-lg hover:bg-erp-sidebarhover text-gray-300 hover:text-white transition-colors">
+                <i class="ph ph-gear text-xl mr-3"></i>
+                <span class="sidebar-text">Settings</span>
+            </a>
+        </nav>
+        
+        <div class="p-4 border-t border-gray-700">
+            <a href="#" class="flex items-center px-3 py-2 rounded-lg hover:bg-erp-sidebarhover text-gray-300 hover:text-white transition-colors">
+                <img src="https://ui-avatars.com/api/?name=Admin+User&background=0ea5e9&color=fff" class="w-8 h-8 rounded-full mr-3" alt="Profile">
+                <div class="sidebar-text overflow-hidden">
+                    <p class="text-sm font-medium text-white truncate">Admin User</p>
+                    <p class="text-xs text-gray-400">View Profile</p>
+                </div>
+            </a>
+            <a href="#" class="mt-2 flex items-center px-3 py-2 rounded-lg hover:bg-red-500/10 text-gray-400 hover:text-red-400 transition-colors">
+                <i class="ph ph-sign-out text-xl mr-3"></i>
+                <span class="sidebar-text">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-full bg-gray-50 overflow-hidden relative">
+        
+        <!-- Topbar -->
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 z-10 w-full flex-shrink-0">
+            <div class="flex items-center flex-1">
+                <button id="toggle-sidebar" class="text-gray-500 hover:text-gray-700 mr-4 focus:outline-none">
+                    <i class="ph ph-list text-2xl"></i>
+                </button>
+                <div class="relative w-full max-w-md hidden sm:block">
+                    <i class="ph ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" placeholder="Search by SKU or product name..." class="w-full pl-10 pr-4 py-2 bg-gray-100 border-none rounded-lg focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all text-sm outline-none">
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="text-gray-500 hover:text-primary-600 relative">
+                    <i class="ph ph-bell text-xl"></i>
+                    <span class="absolute top-0 right-0 h-2 w-2 bg-red-500 rounded-full"></span>
+                </button>
+                <div class="h-8 w-px bg-gray-200 mx-1"></div>
+                <div class="flex items-center cursor-pointer hover:bg-gray-50 rounded-lg p-1 transition-colors">
+                    <img src="https://ui-avatars.com/api/?name=Admin+User&background=0284c7&color=fff" class="w-8 h-8 rounded-full border shadow-sm" alt="User">
+                    <i class="ph ph-caret-down text-gray-500 ml-2 text-sm"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6" id="main-content">
+            
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="view-section active space-y-6">
+                <div class="flex justify-between items-center">
+                    <h1 class="text-2xl font-bold text-gray-800">Dashboard Overview</h1>
+                    <div class="text-sm text-gray-500">Last updated: <span id="current-time">Just now</span></div>
+                </div>
+                
+                <!-- KPIs -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Total Products</p>
+                                <h3 class="text-2xl font-bold text-gray-800" id="kpi-products">1,245</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+                                <i class="ph ph-package text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Low Stock</p>
+                                <h3 class="text-2xl font-bold text-red-600" id="kpi-low-stock">24</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center">
+                                <i class="ph ph-warning-circle text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Pending Receipts</p>
+                                <h3 class="text-2xl font-bold text-gray-800" id="kpi-receipts">12</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                                <i class="ph ph-download-simple text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Pending Deliveries</p>
+                                <h3 class="text-2xl font-bold text-gray-800" id="kpi-deliveries">8</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                                <i class="ph ph-upload-simple text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500 mb-1">Transfers</p>
+                                <h3 class="text-2xl font-bold text-gray-800" id="kpi-transfers">5</h3>
+                            </div>
+                            <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
+                                <i class="ph ph-arrows-left-right text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts & Lists -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Inventory Activity (Next 7 Days)</h3>
+                        <div class="w-full h-72">
+                            <canvas id="inventoryChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 flex flex-col">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Low Stock Alerts</h3>
+                        <div class="flex-1 overflow-y-auto" id="low-stock-list">
+                            <!-- JS Populated -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Recent Stock Movements</h3>
+                        <button class="text-sm text-primary-600 hover:text-primary-700 font-medium">View All</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-200 text-sm text-gray-500">
+                                    <th class="py-3 px-4 font-medium">Product</th>
+                                    <th class="py-3 px-4 font-medium">Type</th>
+                                    <th class="py-3 px-4 font-medium">Qty</th>
+                                    <th class="py-3 px-4 font-medium">Location</th>
+                                    <th class="py-3 px-4 font-medium">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-recent-movements">
+                                <!-- JS Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products View -->
+            <div id="view-products" class="view-section hidden space-y-6">
+                <!-- Will populate through JS templates or static HTML -->
+            </div>
+            
+            <!-- Receipts View -->
+            <div id="view-receipts" class="view-section hidden space-y-6"></div>
+            
+            <!-- Deliveries View -->
+            <div id="view-deliveries" class="view-section hidden space-y-6"></div>
+            
+            <!-- Transfers View -->
+            <div id="view-transfers" class="view-section hidden space-y-6"></div>
+            
+            <!-- Adjustments View -->
+            <div id="view-adjustments" class="view-section hidden space-y-6"></div>
+            
+            <!-- History View -->
+            <div id="view-history" class="view-section hidden space-y-6"></div>
+            
+            <!-- Warehouses View -->
+            <div id="view-warehouses" class="view-section hidden space-y-6"></div>
+            
+        </div>
+    </main>
+
+    <!-- Modals Container -->
+    <div id="modal-container" class="hidden fixed inset-0 z-50 flex justify-center items-center bg-gray-900/50 backdrop-blur-sm opacity-0 transition-opacity duration-300">
+        <!-- Content will be injected here -->
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+</html>
